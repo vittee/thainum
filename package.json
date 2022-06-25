@@ -1,0 +1,7 @@
+{
+  "name": "@vittee/thainum",
+  "version": "0.1.0",
+  "description": "Convert number to readable string in Thai.",
+  "author": "vittee@hotmail.com",
+  "license": "MIT",
+}
