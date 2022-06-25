@@ -1,9 +1,17 @@
 {
-  "name": "@vittee/thainum",
+  "name": "thainum",
   "version": "0.1.0",
   "description": "Convert number to readable string in Thai.",
-  "author": "vittee@hotmail.com",
+  "author": {
+    "name": "Wittawas Nakkasem",
+    "email": "vittee@hotmail.com"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vittee/thainum.git"
+  },
+  "homepage": "https://github.com/vittee/thainum",
   "source": "src/index.ts",
   "main": "./dist/index.cjs",
   "module": "./dist/index.module.js",
