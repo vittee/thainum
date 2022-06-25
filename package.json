@@ -13,6 +13,7 @@
     "clean": "rimraf dist",
     "test": "jest",
     "coverage": "jest --coverage",
+    "build": "pnpm run clean && microbundle",
   },
   "devDependencies": {
     "@types/jest": "^28.1.3",
