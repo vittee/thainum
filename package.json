@@ -4,6 +4,9 @@
   "description": "Convert number to readable string in Thai.",
   "author": "vittee@hotmail.com",
   "license": "MIT",
+  "scripts": {
+    "dev": "tsnd src/index.ts",
+  },
   "devDependencies": {
     "@types/node": "^18.0.0",
     "ts-node-dev": "^2.0.0",
