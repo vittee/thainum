@@ -1,6 +1,6 @@
 {
   "name": "thainum",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Convert number to readable string in Thai.",
   "author": {
     "name": "Wittawas Nakkasem",
