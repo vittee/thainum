@@ -94,7 +94,7 @@ export const text = (n: string | number) => {
   return `${negative ? 'ลบ' : ''}${integer}${(frac ? 'จุด' : '')}${fraction}`;
 }
 
-export function baht(n: string | number, roundStang: boolean = true) {
+export const baht = (n: string | number, roundStang: boolean = true) => {
   let { int, frac, negative } = part(n);
 
   let integer = convert(int);
