@@ -30,9 +30,9 @@ const part = (n: string | number) => {
   }
 }
 
-const digitlize = (s: string): string[] => sanitize(s).split('');
+const digitize = (s: string): string[] => sanitize(s).split('');
 
-const convert = (num: string) => digitlize(num)
+const convert = (num: string) => digitize(num)
   .map(Number)
   .reduce((a, digit, index, { length } ) => {
     const place = (length - index - 1 ) % 6;
@@ -82,7 +82,7 @@ export const text = (n: string | number) => {
   }
 
   let integer = convert(int);
-  const fraction = frac ? digitlize(frac).map(toName).join('') : '';
+  const fraction = frac ? digitize(frac).map(toName).join('') : '';
 
   if (!integer) {
     integer = digitNames[0];
