@@ -16,8 +16,7 @@ const part = (n: string | number) => {
     return {};
   }
 
-  const signs = m[1] ?? '';
-  const [i = '', _, f = ''] = m.slice(2, 5);
+  const [signs = '', i = '', _, f = ''] = m.slice(1, 5);
   const int = i.replace(/[^0-9]/g, '');
   const frac = f.replace(/0+$/, '');
 
@@ -32,43 +31,68 @@ const part = (n: string | number) => {
 
 const digitize = (s: string): string[] => sanitize(s).split('');
 
-const convert = (num: string) => digitize(num)
+const readNumber = (digit: number, prev: number, place: number, formal: boolean) => {
+  const isOnes = place === 0;
+  const isTens = place === 1;
+
+  // Special for digit 2 on the tens place
+  if (isTens && digit === 2) {
+    return 'ยี่';
+  }
+
+  // Special case for digit 1 on the ones place and when the previous digit is known
+  if (isOnes && digit === 1 && prev !== undefined) {
+    // Formal reading should always use 'เอ็ด'
+    // while the informal/military/popular reading
+    // should only use this form when the previous digit is not 0
+    if (formal || (!formal && prev !== 0)) {
+      return 'เอ็ด';
+    }
+  }
+
+  // Skip digit 0, it should be read only when the whole number is completely zero
+  // Also skip digit 1 when on the tens place, as the tens unit should be read instead
+  if (digit === 0 || (isTens && digit === 1)) {
+    return '';
+  }
+
+  return digitNames[digit];
+}
+
+type ConversionState = {
+  text: string;
+  prev?: number;
+  hasValue: boolean;
+}
+
+const convert = (num: string, formal: boolean = false) => digitize(num)
   .map(Number)
-  .reduce((a, digit, index, { length } ) => {
-    const place = (length - index - 1 ) % 6;
-
+  .reduce<ConversionState>((state, digit, index, { length } ) => {
+    const place = (length - index - 1) % 6;
     const isOnes = place === 0;
-    const isTens = place === 1;
 
-    const s = (isTens && digit === 2)
-      ? 'ยี่'
-      : (isOnes && a.wasTens && digit === 1)
-        ? 'เอ็ด'
-        : ((isTens && digit === 1) || digit === 0)
-          ? ''
-          : digitNames[digit]
-      ;
-
+    let reading = readNumber(digit, state.prev, place, formal);
     let unit = (!isOnes && digit !== 0) ? unitNames[place] : '';
 
-    a.hasValue ||= digit > 0;
+    state.hasValue ||= digit > 0;
 
-    if (a.hasValue && isOnes && index !== length - 1) {
+    if (state.hasValue && isOnes && index !== length - 1) {
       unit += unitNames[6];
     }
 
-    if (isTens) {
-      a.wasTens = digit !== 0;
-    }
+    state.prev = digit;
+    state.text += reading + unit;
 
-    a.text += s + unit;
-
-    return a;
-  }, { text: '', wasTens: false, hasValue: false }).text;
+    return state;
+  }, { text: '', prev: undefined, hasValue: false }).text;
 
 const toName = (d: any) => digitNames[+d];
 
-export const text = (n: string | number) => {
+export type ReadingOption = {
+  formalReading?: boolean;
+}
+
+export const text = (n: string | number, options?: ReadingOption) => {
   n = n.toString().trim();
 
   if (!n) {
@@ -81,7 +105,7 @@ export const text = (n: string | number) => {
     return '';
   }
 
-  let integer = convert(int);
+  let integer = convert(int, options?.formalReading);
   const fraction = frac ? digitize(frac).map(toName).join('') : '';
 
   if (!integer) {
@@ -94,10 +118,28 @@ export const text = (n: string | number) => {
   return `${negative ? 'ลบ' : ''}${integer}${(frac ? 'จุด' : '')}${fraction}`;
 }
 
-export const baht = (n: string | number, roundStang: boolean = true) => {
+export type BahtReadingOption = ReadingOption & {
+  roundStang?: boolean;
+}
+
+/** @deprecated Use BahtReadingOption instead */
+export function baht(n: string | number, roundStang: boolean): string;
+export function baht(n: string | number, options?: BahtReadingOption): string;
+
+export function baht(n: string | number, options?: BahtReadingOption | boolean): string {
+  let roundStang = true;
+  let formalReading = false;
+
+  if (typeof options === 'boolean') {
+    roundStang = options;
+  } else if (typeof options !== 'undefined') {
+    roundStang = options.roundStang;
+    formalReading = options.formalReading;
+  }
+
   let { int, frac, negative } = part(n);
 
-  let integer = convert(int);
+  let integer = convert(int, formalReading);
 
   frac = frac.padEnd(2, '0');
 
