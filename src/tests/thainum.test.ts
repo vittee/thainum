@@ -1,13 +1,7 @@
-import { thaiDigits, digitNames, unitNames, baht, text } from "..";
-
-const test = (func: (n: any) => string, v: string | number, t: string) => {
-  it(`should return ${t} for ${v}`, () => {
-    expect(func(v)).toBe(t);
-  });
-}
+import { thaiDigits, digitNames, unitNames, baht, text, ReadingOption, BahtReadingOption } from "..";
 
 describe('Thai Text', () => {
-  const check = (v: string | number, t: string) => test(text, v, t);
+  const check = (v: string | number, t: string, options?: ReadingOption) => it(`should return ${t} for ${v}`, () => expect(text(v, options)).toBe(t));
 
   describe('Empty string', () => {
     it('should return empty string', () => {
@@ -74,6 +68,25 @@ describe('Thai Text', () => {
     check(120, 'หนึ่งร้อยยี่สิบ');
     check(121, 'หนึ่งร้อยยี่สิบเอ็ด');
     check(122, 'หนึ่งร้อยยี่สิบสอง');
+    check(1000001, 'หนึ่งล้านหนึ่ง');
+  });
+
+  describe('Formal readings', () => {
+    const ราชบัณฑิตย์ = { formalReading: true };
+
+    check(1, 'หนึ่ง', ราชบัณฑิตย์);
+    check(10, 'สิบ', ราชบัณฑิตย์);
+    check(101, 'หนึ่งร้อยเอ็ด', ราชบัณฑิตย์);
+    check(111, 'หนึ่งร้อยสิบเอ็ด', ราชบัณฑิตย์);
+    check(1001, 'หนึ่งพันเอ็ด', ราชบัณฑิตย์);
+    check(1011, 'หนึ่งพันสิบเอ็ด', ราชบัณฑิตย์);
+    check(1101, 'หนึ่งพันหนึ่งร้อยเอ็ด', ราชบัณฑิตย์);
+    check(10001, 'หนึ่งหมื่นเอ็ด', ราชบัณฑิตย์);
+    check(100001, 'หนึ่งแสนเอ็ด', ราชบัณฑิตย์);
+    check(1000001, 'หนึ่งล้านเอ็ด', ราชบัณฑิตย์);
+    check(10000001, 'สิบล้านเอ็ด', ราชบัณฑิตย์);
+    check(11000001, 'สิบเอ็ดล้านเอ็ด', ราชบัณฑิตย์);
+    check(21000001, 'ยี่สิบเอ็ดล้านเอ็ด', ราชบัณฑิตย์);
   });
 
   describe('Units', () => {
@@ -128,7 +141,7 @@ describe('Thai Text', () => {
 });
 
 describe('Thai Baht', () => {
-  const check = (v: string | number, t: string) => test(baht, v, t);
+  const check = (v: string | number, t: string, options?: BahtReadingOption) => it(`should return ${t} for ${v}`, () => expect(baht(v, options)).toBe(t));
 
   describe('Whole', () => {
     check('0', 'ศูนย์บาทถ้วน');
@@ -151,7 +164,7 @@ describe('Thai Baht', () => {
 
     [3, 4, 5, 6].forEach(i => {
       const unit = `${digitNames[1]}${unitNames[i]}`;
-      const v = Math.pow(10, i);
+      const v = 10 ** i;
 
       check(v, `${unit}บาทถ้วน`);
       check(`${v}.00`, `${unit}บาทถ้วน`);
